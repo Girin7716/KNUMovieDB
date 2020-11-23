@@ -38,36 +38,32 @@
 						</div>
 					</a> <!-- #branding -->
 
+					<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
+			
 					<div class="main-navigation">
 						<button type="button" class="menu-toggle"><i class="fa fa-bars"></i></button>
 						<ul class="menu">
 							<li class="menu-item current-menu-item"><a href="index.jsp">Home</a></li>
-							
 							<%
-							System.out.println(ID);
-							if(ID == null){
 								out.println("<li class=\"menu-item\"><a href=\"review.jsp\">Review</a></li>");
-							}
-							else
-							{
-								out.println("<li class=\"menu-item\"><a href=\"review.jsp\">MoiveReview</a></li>");
-							}
 							%>
-							
 							<%
 							if(ID == null)
 							out.println("<li class=\"menu-item\"><a href=\"Login.jsp\">Login</a></li>");
 							else
 							out.println("<li class=\"menu-item\"><a href=\"Logout.jsp\">Logout</a></li>");
 							%>
-							
 							<%
 							if(ID == null)
 								out.println("<li class=\"menu-item\"><a href=\"signin.jsp\">Sign_in</a></li>");
 							else
 								out.println("<li class=\"menu-item\"><a href=\"myinfo.jsp\">MyInfo</a></li>");
 							%>
-							
 						</ul> <!-- .menu -->
 
 						<form action="#" class="search-form">

@@ -46,42 +46,23 @@
 					<div class="main-navigation">
 						<button type="button" class="menu-toggle"><i class="fa fa-bars"></i></button>
 						<ul class="menu">
-							<li class="menu-item current-menu-item"><a href="index.jsp">Home</a></li>						
+									<li class="menu-item current-menu-item"><a href="index.jsp">Home</a></li>
 							<%
-							if(ID == null){
 								out.println("<li class=\"menu-item\"><a href=\"review.jsp\">Review</a></li>");
-								request.getSession().setAttribute("ID", ID);	
-								request.getSession().setAttribute("PassWord", PassWord);
-							}
-							else
-							{
-								out.println("<li class=\"menu-item\"><a href=\"review.jsp\">Review</a></li>");
-								request.getSession().setAttribute("ID", ID);	
-								request.getSession().setAttribute("PassWord", PassWord);
-							}
 							%>
 							
 							<%
 							if(ID == null)
 							out.println("<li class=\"menu-item\"><a href=\"Login.jsp\">Login</a></li>");
-							else{
-							out.println("<li class=\"menu-item\"><a href=\"index.jsp\">Logout</a></li>");
-							String sID = null;
-							String sPassWord = null;
-							request.getSession().setAttribute("ID", sID);
-							request.getSession().setAttribute("PassWord", sPassWord);
-							}		
+							else
+							out.println("<li class=\"menu-item\"><a href=\"Logout.jsp\">Logout</a></li>");
 							%>
 							
 							<%
 							if(ID == null)
 								out.println("<li class=\"menu-item\"><a href=\"signin.jsp\">Sign_in</a></li>");
 							else
-							{
 								out.println("<li class=\"menu-item\"><a href=\"myinfo.jsp\">MyInfo</a></li>");
-								request.getSession().setAttribute("ID", ID);	
-								request.getSession().setAttribute("PassWord", PassWord);
-							}
 							%>
 						</ul> <!-- .menu -->
 

@@ -73,7 +73,6 @@
                   <div class="row">
 
                      <h2>Log_in</h2>
-
                      <form action="Loginrequest.jsp" method="POST">
                         <div class="contact-form">
                            <input type="text" name="ID" placeholder="ID..."> <input
