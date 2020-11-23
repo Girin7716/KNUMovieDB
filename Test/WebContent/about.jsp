@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
+<%@ page language = "java" import="java.text.*, java.sql.*" %>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -43,8 +44,19 @@
 							<li class="menu-item"><a href="index.html">Home</a></li>
 							<li class="menu-item current-menu-item"><a href="about.html">About</a></li>
 							<li class="menu-item"><a href="review.html">Movie reviews</a></li>
-							<li class="menu-item"><a href="Login.jsp">Login</a></li>
+							<%
+							if(ID == null)
+							out.println("<li class=\"menu-item\"><a href=\"Login.jsp\">Login</a></li>");
+							else{
+							out.println("<li class=\"menu-item\"><a href=\"Login.jsp\">Logout</a></li>");
+							ID = null;
+							PassWord = null;
+							}						
+	
+							%>
+							
 							<li class="menu-item"><a href="SignIn.jsp">SignIn</a></li>
+							
 						</ul> <!-- .menu -->
 
 						<form action="#" class="search-form">
