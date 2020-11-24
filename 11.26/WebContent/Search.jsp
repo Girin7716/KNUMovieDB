@@ -58,7 +58,12 @@ pstmt.executeUpdate();
                </div>
             </a>
             <!-- #branding -->
-
+<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
             <div class="main-navigation">
                <button type="button" class="menu-toggle">
                   <i class="fa fa-bars"></i>
@@ -286,7 +291,7 @@ pstmt.executeUpdate();
  									out.println(output.getString(1) + " /");
  								pstmt.close();
  								
- 								out.println("<br>Actor : ");
+ 								out.println("<br>Actors : ");
  								sql = "SELECT NAME FROM TEST T, APPEAR A, ACTOR AC WHERE T.TCONST = '" + movie_Tconst
  										+ "' AND T.TCONST = A.PARENTTCONST AND A.PARENTACTOR_ID = AC.ACTOR_ID";
  								pstmt = conn.prepareStatement(sql);

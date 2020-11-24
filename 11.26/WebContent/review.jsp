@@ -58,7 +58,12 @@ pstmt.executeUpdate();
 					</div>
 				</a>
 				<!-- #branding -->
-
+<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
 				<div class="main-navigation">
 					<button type="button" class="menu-toggle">
 						<i class="fa fa-bars"></i>
@@ -105,15 +110,23 @@ pstmt.executeUpdate();
 					</div>
 
 		<%
-			sql = "WITH AVG_TABLE AS (SELECT R.PARENTTCONST, AVG(R.RATING) AVG FROM RATING R GROUP BY PARENTTCONST) SELECT TITLE, R.Rating, AVG FROM MOVIE M, RATING R, AVG_TABLE A WHERE R.PARENTACCOUNT = '"
+			sql = "WITH AVG_TABLE AS (SELECT R.PARENTTCONST, AVG(R.RATING) AVG FROM RATING R GROUP BY PARENTTCONST) SELECT M.TCONST, TITLE, R.Rating, AVG FROM MOVIE M, RATING R, AVG_TABLE A WHERE R.PARENTACCOUNT = '"
 				+ ID + "' AND M.TCONST = R.PARENTTCONST AND M.Tconst = A.PARENTTCONST";
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery(); 
 			while (rs.next()) {
-				out.println("<a href = \"test.jsp\">" + rs.getString(1) + "</a>");
-				out.println("Title    : " + rs.getString(1));
-				out.println("MyRating : " + rs.getDouble(2));
-				out.println("AVG      : " + rs.getDouble(3));
+				String movie_Tconst = rs.getString(1);
+				int img_name = Integer.parseInt(movie_Tconst.substring(2));
+				out.println("<div class = \"col-sm-2 col-md-2\">"+ " <a href = \"test.jsp?tconst="+ movie_Tconst + " \"> " + " <img src = \"movie_img/" + img_name + ".jpg\"> </a></div>");
+				out.println("<a href = \"test.jsp?tconst=" + movie_Tconst + " \"> " + rs.getString(2) + "</a>");
+				out.println("<br>MyRating : " + rs.getDouble(3));
+				out.println("<br>AVG : " + rs.getDouble(4));
+				out.println("<br></br>");
+				out.println("<br></br>");
+				out.println("<br></br>");
+				out.println("<br></br>");
+				out.println("<br></br>");
+				out.println("<br></br>");
 				out.println("<br></br>");
 			}
 			pstmt.close();

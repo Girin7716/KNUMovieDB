@@ -74,6 +74,13 @@
 					</div>
 				</a>
 				<!-- #branding -->
+					<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
+
 
 				<div class="main-navigation">
 					<button type="button" class="menu-toggle">
@@ -121,8 +128,6 @@
 					</div>
 
 					<div class="content_left">
-
-
 						<%
 							System.out.println(ID);
 						String query = "select * from account where account_id = '" + ID + "'";

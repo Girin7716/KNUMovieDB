@@ -16,6 +16,7 @@ String portNum = "1521";
 String user = "movie";
 String pass = "movie";
 String url = "jdbc:oracle:thin:@"+serverIP+":"+portNum+":"+strSID;
+String sql = null;
 Connection conn = null;
 PreparedStatement pstmt;
 ResultSet rs;
@@ -45,6 +46,17 @@ conn = DriverManager.getConnection(url,user,pass);
       <![endif]-->
 
 </head>
+<style>
+.content_left {
+	float: left;
+	width: 7%;
+}
+
+.content_right {
+	float: right;
+	width: 68%
+}
+</style>
 <body>
    <div id="site-content">
       <header class="site-header">
@@ -57,7 +69,12 @@ conn = DriverManager.getConnection(url,user,pass);
                </div>
             </a>
             <!-- #branding -->
-
+<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
             <div class="main-navigation">
                <button type="button" class="menu-toggle">
                   <i class="fa fa-bars"></i>
@@ -100,17 +117,89 @@ conn = DriverManager.getConnection(url,user,pass);
                <div class="breadcrumbs">
                   <a href="index.jsp">Home</a> <span>Sign_in</span>
                </div>
-
-               <div class="content">
-                  <div class="row">
-
-            <h2>TEST_result</h2>
+<%
+int img_name = Integer.parseInt(tconst.substring(2));
+out.println("<p><div class = \"col-sm-6 col-md-3\">" + " <img src = \"movie_img/" + img_name + ".jpg\"> </div></p>");
+%>
+              
+           <div class = "content_left">
+            <%
+            out.println("<p>Title</p>");
+            out.println("<p>Type</p>");
+            out.println("<p>Runtime</p>");
+            out.println("<p>StartYear</p>");
+            out.println("<p>EndYear</p>");
+            out.println("<p>isAdult</p>");
+            out.println("<p>Genre</p>");
+            out.println("<p>Actors</p>");
+            out.println("<p>Version</p>");
+            %>       
+            </div>
+            
+            <div class = "content_right">
       		<%
-		int img_name = Integer.parseInt(tconst.substring(2));
-		out.println("<div class = \"col-sm-6 col-md-3\">" + " <img src = \"movie_img/" + img_name + ".jpg\"> </div>");
+				sql = "SELECT * FROM MOVIE WHERE TCONST = '" + tconst + "'"; // VIEW에서 정보를 얻어옴
+				pstmt = conn.prepareStatement(sql);
+				rs = pstmt.executeQuery();
+				while(rs.next()){
+					out.println("<p>" + rs.getString(2) + "</p>");
+					out.println("<p>" + rs.getString(3) + "</p>");
+					out.println("<p>" + rs.getInt(4) + "</p>");
+					out.println("<p>" + rs.getString(5) + "</p>");
+					out.println("<p>" + rs.getString(6) + "</p>");
+					out.print("<p>");
+					if (rs.getInt(7) == 1)
+						out.println("Yes");
+					else if (rs.getInt(7) == 0)
+						out.println("No");
+				}
+				out.println("</p>");
+				pstmt.close();
+				
+					out.print("<p>");
+					sql = "SELECT PARENTGENRETYPE FROM MOVIE T, MOVIEIS M WHERE TCONST = '" + tconst
+							+ "' AND T.TCONST = M.PARENTTCONST";
+					pstmt = conn.prepareStatement(sql);
+					rs = pstmt.executeQuery();
+					while (rs.next())
+						out.print(rs.getString(1) + " / ");
+					out.println("</p>");
+					pstmt.close();
+					
+					out.print("<p>");
+					sql = "SELECT NAME FROM MOVIE T, APPEAR A, ACTOR AC WHERE TCONST = '" + tconst
+							+ "' AND T.TCONST = A.PARENTTCONST AND A.PARENTACTOR_ID = AC.ACTOR_ID";
+					pstmt = conn.prepareStatement(sql);
+					rs = pstmt.executeQuery();
+					while (rs.next())
+						out.print(rs.getString(1) + " / ");
+					out.println("</p>");
+					pstmt.close();
+					
+					out.print("<p>");
+					sql = "SELECT DISTINCT REGION FROM MOVIE T, VERSION V WHERE TCONST = '" + tconst
+							+ "' AND T.TCONST = V.PARENTTCONST";
+					pstmt = conn.prepareStatement(sql);
+					rs = pstmt.executeQuery();
+					while (rs.next())
+						out.print(rs.getString(1) + " / ");
+					out.println("</p>");
+					pstmt.close();
+      		%>
+      		<!--  rating test -->
+      		<%
+      		sql = "SELECT TCONST FROM TEST WHERE TCONST = '" + tconst + "'";
+      		pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+			{
+				out.println("can rating");
+			}
+      		pstmt.close();
+			
       		%>
       		
-      		
+      		</div>
                   </div>
                </div>
             </div>

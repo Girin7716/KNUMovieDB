@@ -38,7 +38,12 @@
 					</div>
 				</a>
 				<!-- #branding -->
-
+<div>
+ 				<form action="Search.jsp" method="POST">
+					<input type="text" name="Search" placeholder="Search(Title,Type,Genre,Version)" size = 30>
+					 <input type="submit" value="Search">
+				</form>
+					</div>		
 				<div class="main-navigation">
 					<button type="button" class="menu-toggle">
 						<i class="fa fa-bars"></i>
