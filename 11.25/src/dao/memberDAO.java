@@ -28,6 +28,52 @@ public class memberDAO {
 		return instance;
 	}
 
+	public int delete(String ID) throws ClassNotFoundException {
+		String serverIP = "localhost";
+		String strSID = "orcl";
+		String portNum = "1521";
+		String USER_MOVIE = "movie";
+		String USER_PASSWD = "movie";
+		String URL = "jdbc:oracle:thin:@" + serverIP + ":" + portNum + ":" + strSID;
+		Statement stmt = null; // Statement object
+		Connection conn = null;
+		PreparedStatement pstmt;
+		ResultSet rs;
+
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+
+		try {
+			conn = DriverManager.getConnection(URL, USER_MOVIE, USER_PASSWD);
+			// conn.setAutoCommit(false);
+			// System.out.println("Connection Success!");
+		} catch (SQLException ex) {
+			System.err.println("Cannot get a connection : " + ex.getMessage());
+			System.exit(1);
+		}
+		try {
+			stmt = conn.createStatement();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		String sql = "DELETE FROM ACCOUNT WHERE ACCOUNT_ID= '" + ID + "'";
+		int updat = 0;
+		try {
+			updat = stmt.executeUpdate(sql);
+			if (updat == 1) {
+				System.out.println("성공적으로 회원 탈퇴했습니다.");
+				System.out.println("종료합니다.");
+				return 1;
+			} else
+				System.out.println("회원 탈퇴 실패");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+
 	public int signup() throws ClassNotFoundException, SQLException {
 		String serverIP = "localhost";
 		String strSID = "orcl";
@@ -39,7 +85,7 @@ public class memberDAO {
 		Connection conn = null;
 		PreparedStatement pstmt;
 		ResultSet rs;
-		
+
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try {
@@ -133,7 +179,7 @@ public class memberDAO {
 		Statement stmt = null; // Statement object
 		PreparedStatement pstmt;
 		ResultSet rs;
-		
+
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			// System.out.println("Success!");
@@ -159,9 +205,8 @@ public class memberDAO {
 
 		// (1)아이디 중복체크
 		try {
-			//String sql = "SELECT * FROM tutorial.member WHERE id ='" + id + "';";
-			String sql = "select * from account where account_id = '"+id+"';";
-
+			// String sql = "SELECT * FROM tutorial.member WHERE id ='" + id + "';";
+			String sql = "select * from account where account_id = '" + id + "';";
 
 			rs = stmt.executeQuery(sql);
 
@@ -173,15 +218,16 @@ public class memberDAO {
 		} catch (SQLException e) {
 		}
 
-		if (check1 == 0 )//중복 없음
+		if (check1 == 0)// 중복 없음
 			return 1;
-		else if (check1 == 1) {//중복 있음
+		else if (check1 == 1) {// 중복 있음
 			return 2;
 		}
 		return 0;
 	}
 
-	public int signupinsert(String id, String password, String fname, String lname, String phone, String address, String sex, String bdate, String job) {
+	public int signupinsert(String id, String password, String fname, String lname, String phone, String address,
+			String sex, String bdate, String job) {
 		String serverIP = "localhost";
 		String strSID = "orcl";
 		String portNum = "1521";
@@ -190,7 +236,7 @@ public class memberDAO {
 		String URL = "jdbc:oracle:thin:@" + serverIP + ":" + portNum + ":" + strSID;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			// System.out.println("Success!");
@@ -208,9 +254,7 @@ public class memberDAO {
 		}
 
 		String sql = "insert into account values(?,?,?,?,?,?,?,?,'Basic',0,?)";
-		
-		
-		
+
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
@@ -238,13 +282,13 @@ public class memberDAO {
 			} else {
 				pstmt.setString(9, job);
 			}
-			/*pstmt.setString(6, address);
-			pstmt.setString(7, sex);
-			pstmt.setString(8, bdate);
-			pstmt.setString(9, job);*/
-			//pstmt.executeUpdate();
-			//System.out.println("회원가입 성공");
-			
+			/*
+			 * pstmt.setString(6, address); pstmt.setString(7, sex); pstmt.setString(8,
+			 * bdate); pstmt.setString(9, job);
+			 */
+			// pstmt.executeUpdate();
+			// System.out.println("회원가입 성공");
+
 		} catch (SQLException e) {
 		}
 		int prs;
