@@ -2,7 +2,7 @@
 ## Phase1
 ___
 ### ER Diagram
-![ER_Diagram](./readme/er_diagram.JPG)
+![ER_Diagram](./er_diagram.JPG)
 <details>
 <summary>상세 설명</summary>
 
