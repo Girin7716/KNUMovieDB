@@ -200,19 +200,19 @@ ___
   - ALTER TABLE MOVIEIS ADD FOREIGN KEY(ParentGenreType) REFERENCES GENRE (Genre_Type) ON DELETE CASCADE;
   - 각 테이블에 ON DELETE CASCADE를 해줌으로써, FK로 연결되어 있는 정보가 사라지면 해당 튜플을 삭제하도록 처리했다.
 - 아래의 데이터 제약 조건을 고려하여 CREATE, INSERT 진행.
-  - ![movie_constraint](./phase2_movie.JPG)
-  - ![genre_constraint](./phase2_genre.JPG)
-  - ![rating_constraint](./phase2_rating.JPG)
-  - ![actor_constraint](./phase2_actor.JPG)
-  - ![episode_constraint](./phase2_episode.JPG)
-  - ![version_constraint](./phase2_version.JPG)
-  - ![acctoun_constraint](./phase2_account.JPG)
+  - ![movie_constraint](./readme/phase2_movie.JPG)
+  - ![genre_constraint](./readme/phase2_genre.JPG)
+  - ![rating_constraint](./readme/phase2_rating.JPG)
+  - ![actor_constraint](./readme/phase2_actor.JPG)
+  - ![episode_constraint](./readme/phase2_episode.JPG)
+  - ![version_constraint](./readme/phase2_version.JPG)
+  - ![acctoun_constraint](./readme/phase2_account.JPG)
 <br />
 - 튜플 삽입(Team6-phase2-2.txt)
   - imdb dataset을 바탕으로 ( https://www.imdb.com/interfaces/ ) 프로젝트에서 필요한 정보들만 parsing하여서 txt 파일을 생성하였다.
 <br />
 - 쿼리문 예제(Team6-phase2-3.txt)
-  - ![query1_14](./phase2_q1_q14.JPG)<br />![query15_20](./phase2_q15_q20.JPG)
+  - ![query1_14](./readme/phase2_q1_q14.JPG)<br />![query15_20](./readme/phase2_q15_q20.JPG)
 
 </details>
 
