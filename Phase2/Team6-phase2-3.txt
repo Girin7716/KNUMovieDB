@@ -1,0 +1,409 @@
+--1. 
+SELECT COUNT(Account_type) FROM ACCOUNT WHERE Account_type = 0;
+
+--2. 
+SELECT Fname, Lname, Address FROM ACCOUNT WHERE Account_type=1;
+
+--3. 
+SELECT count(*)
+from(select count(account_id)
+   from account, rating
+   where account_id=parentAccount
+   group by account_id
+   having count(rating)>=5);
+
+--4.--
+SELECT COUNT(Tconst)
+FROM MOVIE, MOVIEIS
+WHERE Start_year >= TO_DATE('2020-01-01','YYYY-MM-DD')
+AND Start_year <= TO_DATE('2020-12-31','YYYY-MM-DD')
+AND Tconst = ParentTconst
+AND ParentGenreType = 'Romance';
+
+--5.
+SELECT COUNT(*)
+FROM MOVIE
+WHERE Start_year >= To_Date('2018.10.07', 'yyyy.mm.dd')
+AND Start_year <= To_Date('2020.10.07', 'yyyy.mm.dd')
+AND End_year <= To_Date('2020.10.07','YYYY.MM.DD')
+AND End_year >= To_Date('2018.10.07','YYYY.MM.DD');
+
+--6.
+SELECT AVG(Rating)
+FROM MOVIE, RATING
+WHERE Start_year >= To_Date('2015.10.07', 'yyyy.mm.dd')
+AND　Start_year <= To_Date('2020.10.07', 'yyyy.mm.dd');
+
+--7.
+select count(title)
+   from movie
+where runtime>=100;
+
+--8.
+with Atable as
+( select M.Title, M.Tconst
+from movieis MS, movie M
+where (MS.ParentTconst=M.Tconst and MS.ParentGenreType='Action') or (MS.ParentTconst=M.Tconst and MS.ParentGenreType='Comedy' )
+),
+Btable as(
+SELECT A.Tconst, R.RATING
+FROM RATING R, Atable A
+WHERE R.ParentTconst = A.Tconst),
+Ctable as(
+SELECT Tconst, AVG(B.Rating) AS AVR
+FROM Btable B
+GROUP BY Tconst)
+SELECT M.Title
+FROM MOVIE M, Ctable C
+WHERE C.Tconst = M.Tconst
+AND (SELECT MAX(AVR) FROM Ctable) = C.AVR;
+
+--9.
+SELECT COUNT(*)
+FROM(
+SELECT M.Tconst
+FROM MOVIE M, EPISODE E
+WHERE M.Type = 'Tv_series'
+AND M.Tconst = E.ParentTconst
+GROUP BY M.Tconst
+having count(M.Tconst) >= 10);
+
+
+--10.
+WITH AGETABLE AS
+(
+SELECT A.Fname AS Fname, A.Lname AS Lname, TRUNC(MONTHS_BETWEEN(SYSDATE,bdate)/12,0) AS AGE
+FROM ACCOUNT A
+MINUS
+SELECT A.Fname AS Fname, A.Lname AS Lname, TRUNC(MONTHS_BETWEEN(SYSDATE,bdate)/12,0) AS AGE
+FROM RATING R, ACCOUNT A, MOVIE M
+WHERE R.ParentAccount = A.Account_id
+AND R.ParentTconst = M.Tconst
+),
+MAXTABLE AS
+(
+SELECT MAX(AGE) AS AGE
+FROM AGETABLE
+)
+SELECT AT.Fname, AT.Lname, AT.AGE
+FROM AGETABLE AT, MAXTABLE MX
+WHERE AT.AGE = MX.AGE;
+
+--11.
+WITH SOMEDEPTS AS
+(
+SELECT ParentAccount
+FROM RATING
+GROUP BY ParentAccount
+having count(Rating) = 1
+)
+SELECT COUNT(Account_ID)
+FROM SOMEDEPTS, ACCOUNT A
+WHERE SOMEDEPTS.ParentAccount = A.Account_ID
+AND A.Job IS NOT NULL;
+
+--12. ----
+SELECT distinct A.Fname, A.Lname
+FROM ACCOUNT A, RATING R
+WHERE TRUNC(MONTHS_BETWEEN(SYSDATE,bdate)/12,0) =(
+SELECT MAX(TRUNC(MONTHS_BETWEEN(SYSDATE,bdate)/12,0))
+FROM ACCOUNT)
+Group by A.Fname, A.Lname, A.Bdate
+Having Count(R.rating)>=8;
+
+--13.
+WITH SOMEDEPTS AS
+(
+SELECT ParentTconst
+FROM MOVIEIS MI
+MINUS
+SELECT ParentTconst
+FROM MOVIEIS
+WHERE ParentGenreType = 'Action'
+),
+AVGTABLE AS
+(
+SELECT ParentTconst, AVG(Rating)
+FROM RATING
+GROUP BY ParentTconst 
+HAVING AVG(Rating) < 6
+),
+MOVIETABLE AS
+(
+SELECT Tconst
+FROM MOVIE, SOMEDEPTS SM, AVGTABLE AG
+WHERE Start_year >= TO_DATE('2010-01-01', 'YYYY-MM-DD')
+AND Type = 'Movie'
+AND SM.ParentTconst = AG.ParentTconst
+AND SM.ParentTconst = Tconst
+)
+SELECT A.Name, M.Title
+FROM APPEAR AP, Actor A, MOVIE M, MOVIETABLE MT
+WHERE MT.Tconst = M.Tconst
+AND AP.ParentTconst = MT.Tconst
+AND AP.ParentActor_id = A.Actor_id;
+
+--14.
+WITH ACCOUNTTABLE AS(
+SELECT A.Account_id, TRUNC(MONTHS_BETWEEN(SYSDATE,A.bdate)/12,0) AS AGE, A.Bdate
+FROM ACCOUNT A
+WHERE A.Membership = 'Prime'
+),
+MINTABLE AS
+(
+SELECT MIN(AGE) AS AGE
+FROM ACCOUNTTABLE
+),
+MINBDATE AS(
+SELECT DISTINCT EXTRACT (YEAR FROM AC.Bdate) AS Bdate
+FROM ACCOUNTTABLE AT, MINTABLE MT, ACCOUNT AC
+WHERE AT.AGE = MT.AGE
+AND AT.Account_id = AC.Account_id
+)
+SELECT COUNT(Tconst)
+FROM MOVIE M, MINBDATE MB
+WHERE MB.Bdate = EXTRACT (YEAR FROM M.Start_year) OR MB.Bdate = EXTRACT (YEAR FROM M.End_year);
+
+--15.
+WITH SOMEDEPTS AS
+(SELECT ParentAccount, COUNT(ParentAccount)
+FROM RATING
+GROUP BY ParentAccount
+HAVING COUNT(*) >= 10),
+PREMI AS(
+SELECT A.Account_id
+FROM ACCOUNT A, SOMEDEPTS B
+WHERE A.Account_id = B.ParentAccount
+AND A.Membership = 'Premium'),
+MOVIETYPE AS(
+SELECT *
+FROM PREMI P, RATING R
+WHERE P.Account_id = R.ParentAccount),
+EIGHT AS(
+SELECT *
+FROM MOVIETYPE MT, MOVIE M
+WHERE MT.ParentTconst = M.Tconst
+AND M.Type <> 'Tv_series')
+SELECT MAX(E.Start_year)
+FROM EIGHT E
+WHERE E.Rating < 8;
+
+--16.
+With Atable as
+(
+   Select Account_Id
+   from account, rating
+   where rating=(Select Max(Rating) from Rating) and account_id=ParentAccount
+   Group by Account_id
+),
+Btable as
+(
+   select AC.Account_id as AcD, LENGTH(AC.Address) as LG
+   from Atable A, account AC
+   where A.Account_id=AC.Account_id and AC.address is not null
+   group by AC.account_id, AC.address
+),
+MaxTable as
+(
+select MAX(LG) as Bmax
+from Btable
+)
+Select distinct AC.Phone_number
+from Account AC, MaxTable M
+where Length(AC.Address)=M.Bmax;
+
+--17.
+WITH COUNTTABLE AS(
+SELECT A.Actor_id, COUNT(AP.ParentTconst) AS c
+FROM ACTOR A, APPEAR AP
+WHERE A.Actor_id = AP.ParentActor_id
+GROUP BY A.Actor_id
+),
+RANKTABLE AS(
+SELECT Actor_id, C, DENSE_RANK() OVER (ORDER BY C DESC) AS RANK
+FROM COUNTTABLE
+),
+ACTORTABLE AS(
+SELECT RT.Actor_id
+FROM RANKTABLE RT
+WHERE RT.RANK = 3
+),
+MINBDATE AS(
+SELECT MIN(M.Start_year) AS MINBDATE
+FROM MOVIE M, ACTORTABLE AT, APPEAR AP
+WHERE AP.ParentActor_id = AT.Actor_id
+AND AP.ParentTconst = M.Tconst
+),
+AVGTABLE AS
+(
+SELECT ParentTconst,  AVG(Rating) AS AG
+FROM RATING
+GROUP BY ParentTconst
+),
+MATCHTABLE AS(
+SELECT M.Tconst
+FROM MOVIE M, MINBDATE MB
+WHERE M.Start_year = MB.MINBDATE
+),
+M_ATABLE AS(
+SELECT MT.Tconst, AT.AG
+FROM MATCHTABLE MT, AVGTABLE AT
+WHERE MT.Tconst = AT.ParentTconst
+)
+SELECT COUNT(*)
+FROM M_ATABLE MT, AVGTABLE AT
+WHERE (AT.AG = MT.AG - 1) OR (AT.AG = MT.AG +1);
+
+
+--18.
+WITH TV AS(
+SELECT V.ParentTconst, COUNT(V.ParentTconst)
+FROM VERSION V
+GROUP BY V.ParentTconst
+HAVING COUNT(*) >=5 AND COUNT(*)<=10),
+VER_RATING AS(
+SELECT AVG(R.Rating) VERAVG
+FROM TV, RATING R
+WHERE TV.ParentTconst = R.ParentTconst),
+MV AS(
+SELECT *
+FROM MOVIE M
+WHERE M.Type = 'Movie'),
+FIVE AS(
+SELECT AP.ParentTconst, COUNT(AP.ParentTconst)
+FROM MV, APPEAR AP
+WHERE MV.Tconst = AP.ParentTconst
+GROUP BY AP.ParentTconst
+HAVING COUNT(*) <=5),
+MV_RATING AS(
+SELECT AVG(R.Rating) MVAVG
+FROM FIVE F, Rating R
+WHERE F.ParentTconst = R.ParentTconst)
+SELECT (MVAVG+VERAVG)/2 AS AVGERAGE
+FROM MV_RATING M, VER_RATING V
+;
+
+--19.
+WITH AVGTABLE AS
+(
+SELECT ParentTconst,  AVG(Rating) AS AG
+FROM RATING
+GROUP BY ParentTconst
+),
+RANKTABLE AS(
+SELECT AT.ParentTconst, AT.AG, DENSE_RANK() OVER (ORDER BY AT.AG DESC) AS RANK
+FROM AVGTABLE AT
+),
+MADE AS(
+SELECT RT.ParentTconst
+FROM RANKTABLE RT
+WHERE RT.RANK = 2
+),
+M_ATABLE AS(
+SELECT AP.ParentTconst, AP.ParentActor_id
+FROM MADE M, APPEAR AP
+WHERE AP.ParentTconst = M.ParentTconst
+),
+A_MTABLE AS(
+SELECT DISTINCT AP.ParentTconst
+FROM M_ATABLE MA, APPEAR AP
+WHERE MA.ParentActor_id = AP.ParentActor_id
+),
+M_RANKTABLE AS(
+SELECT AT.ParentTconst, AT.AG, DENSE_RANK() OVER (ORDER BY AT.AG DESC) AS RANK
+FROM AVGTABLE AT, A_MTABLE AMT
+WHERE AMT.ParentTconst = AT.ParentTconst
+),
+FTABLE AS (
+SELECT MR.ParentTconst
+FROM M_RANKTABLE MR
+WHERE MR.RANK = 2
+),
+TIMETABLE AS(
+SELECT FT.ParentTconst, M.Runtime
+FROM FTABLE FT, MOVIE M
+WHERE FT.ParentTconst = M.Tconst
+)
+SELECT M.Title
+FROM TIMETABLE TT, MOVIE M
+WHERE TT.Runtime = M.Runtime;
+
+
+--20.
+WITH F_MTABLE AS
+(
+SELECT R.ParentTconst, COUNT(R.Rating) AS Rating
+FROM ACCOUNT A, RATING R
+WHERE R.ParentAccount = A.Account_id AND A.Sex = 'F'
+GROUP BY R.ParentTconst
+),
+RANKTABLE AS
+(
+SELECT FM.ParentTconst, FM.Rating, DENSE_RANK() OVER (ORDER BY FM.Rating DESC) AS RANK
+FROM F_MTABLE FM
+),
+TOP_RANKTABLE AS -- TOP_RANK의 movie const를 가진 table
+(
+SELECT RT.ParentTconst
+FROM RANKTABLE RT
+WHERE RT.Rank = 1
+),
+M_ATABLE AS(
+SELECT A.Account_ID
+FROM TOP_RANKTABLE TRT, RATING R, ACCOUNT A
+WHERE TRT.ParentTconst = R.ParentTconst
+AND R.ParentAccount = A.Account_ID AND A.Sex = 'M'
+),
+A_CTABLE AS(
+SELECT R.ParentTconst, COUNT(R.Rating) AS Rating
+FROM M_ATABLE MT, RATING R
+WHERE MT.Account_ID = R.ParentAccount
+GROUP BY R.ParentTconst
+),
+A_CRANKTABLE AS(
+SELECT AT.ParentTconst, AT.Rating, DENSE_RANK() OVER (ORDER BY AT.Rating DESC) AS RANK
+FROM A_CTABLE AT
+),
+A_CTOPRANKTABLE AS(
+SELECT ACR.ParentTconst
+FROM A_CRANKTABLE ACR
+WHERE ACR.RANK = 1
+),
+GENTABLE AS(
+SELECT DISTINCT MI.ParentGenreType
+FROM MOVIEIS MI, A_CTOPRANKTABLE ACTR
+WHERE ACTR.ParentTconst = MI.ParentTconst
+),
+M_GTABLE AS(
+SELECT DISTINCT MI.ParentTconst
+FROM GENTABLE GT, MOVIEIS MI
+WHERE MI.ParentGenreType = GT.ParentGenreType
+),
+M_RTABLE AS(
+SELECT MGT.ParentTconst AS MP, R.Rating AS Rating
+FROM M_GTABLE MGT LEFT OUTER JOIN RATING R
+ON MGT.ParentTconst = R.ParentTconst
+),
+M_COUNTTABLE AS(
+SELECT MRT.MP, COUNT(MRT.Rating) AS Rating
+FROM M_RTABLE MRT
+GROUP BY MRT.MP
+),
+M_RANKCOUNTTABLE AS(
+SELECT MCT.MP, MCT.Rating, DENSE_RANK() OVER (ORDER BY MCT.Rating ASC) AS RANK
+FROM M_COUNTTABLE MCT
+),
+MIN_MOVIE AS(
+SELECT MRT.MP
+FROM M_RANKCOUNTTABLE MRT
+WHERE MRT.RANK = 1),
+MOVIE_START AS(
+SELECT EXTRACT(YEAR FROM M.Start_year) AS syear
+FROM MIN_MOVIE MM, MOVIE M
+WHERE MM.MP = M.Tconst),
+ACCOUNT_YEAR AS(
+SELECT A.Lname, A.Fname,  EXTRACT(YEAR FROM A.BDATE) AS year
+FROM ACCOUNT A)
+SELECT DISTINCT AY.Lname, AY.Fname
+FROM ACCOUNT_YEAR AY, MOVIE_START MOST
+WHERE AY.year = MOST.syear;

@@ -1,0 +1,25 @@
+EPISODE TABLE의 ParentTconst는 MOVIE TABLE의 Tconst를 상속받는다.
+이 ParentTconst로 어떤 MOVIE에서 왔는지 매칭시킨다.
+
+VERSION TABLE의 ParentTconst는 MOVIE TABLE의 Tconst를 상속받는다.
+이 ParetTconst로 어떤 MOVIE에서 왔는지 알 수 있다.
+
+RATING TABLE은 ACCOUNT TABLE와 MOVIE TABLE의 N:M 관계를 설명하기 위해 만들어졌다.
+RATING TABLE의 ParentAccount는 ACCOUNT TABLE의 Account_ID를 상속받는다.
+이 ParentAccount로 어떤 ACCOUNT에서 평점을 줬는지 알 수 있다.
+RATING TABLE의 ParentTconst는 MOVIE TABLE의 Tconst를 상속받는다.
+이 ParentTconst로 어떤 MOVIE가 평점을 받았는지 알 수 있다.
+RATING TABLE의 ParentTconst와 ParentAccount는 두개가 합쳐서 PRIMARY KEY가 되며,
+RATING TABLE로 어떤 Account_ID가 어느 Tconst에 점수를 줬는지 알 수 있다.
+
+APPEAR TABLE은 MOVIE TABLE과 ACTOR TABLE의 N:M 관계를 설명하기 위해 만들어졌다.
+APPEAR TABLE의 ParentActor_id는 ACTOR TABLE의 Actor_id를 상속받는다.
+이 ParentActor_id로 어떤 ACTOR가 출연했는지 알 수 있다.
+APPEAR TABLE의 ParentTconst는 MOVIE TABLE의 Tconst를 상속받는다.
+이 ParentTconst로 어떤 MOVIE에 출연했는지 알 수 있다.
+
+MOVIEIS TABLE은 MOVIE TABLE과 GENRE TABLE의 N:M 관계를 설명하기 위해 만들어졌다.
+MOVIEIS TABLE의 ParentTconst는 MOVIE TABLE의 Tconst를 상속받는다.
+이 ParentTconst로 어떤 MOVIE가 GENRE를 갖는지 알 수 있다.
+MOVIEIS TABLE의 ParentGenreType은 GENRE TABLE의 Genre_Type을 상속받는다.
+이 ParentGenreType으로 어떤 GENRE를 갖는지 알 수 있다.
